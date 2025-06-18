@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                // Populate the artists drop down
+                populateDropdown(
+                    "artistsDropDown",
+                    {
+                        tables: "artists",
+                        columns: ["ArtistID", "FirstName", "LastName"],
+                        sort: ["LastName, FirstName"],
+                    },
+                    handleQueryCached,
+                    (artist) => artist.ArtistID,
+                    (artist) => `${artist.FirstName} ${artist.LastName}`,
+                    getCache("ArtistIDFilter"),
+                );
+
+                // Populate the gallery drop down
+                populateDropdown(
+                    "galleriesDropDown",
+                    {
+                        tables: "galleries",
+                        columns: ["GalleryID", "GalleryName"],
+                        sort: "GalleryName",
+                    },
+                    handleQueryCached,
+                    (gallery) => gallery.GalleryID,
+                    (gallery) => gallery.GalleryName,
+                    getCache("GalleryIDFilter"),
+                );
+
+                // Populate the shapes dropdown
+                populateDropdown(
+                    "shapesDropDown",
+                    {
+                        tables: "shapes",
+                        columns: ["ShapeID", "ShapeName"],
+                        sort: "ShapeName",
+                    },
+                    handleQueryCached,
+                    (shape) => shape.ShapeID,
+                    (shape) => shape.ShapeName,
+                    getCache("ShapeIDFilter"),
+                );
+
+                const paintingsQuery = {
+                    tables: "paintings",
+                    columns: [
+                        "paintings.PaintingID",
+                        "paintings.ArtistID",
+                        "paintings.GalleryID",
+                        "paintings.ShapeID",
+                        "paintings.Title",
+                        "paintings.Excerpt",
+                        "paintings.ImageFileName",
+                        "paintings.Cost",
+                        "artists.FirstName",
+                        "artists.LastName",
+                    ],
+                    joins: [
+                        {
+                            table: "artists",
+                            on: "paintings.ArtistID = artists.ArtistID",
+                        },
+                    ],
+                    sort: ["artists.LastName"],
+                };
+                populatePaintingList(
+                    "paintingsList",
+                    paintingsQuery,
+                    handleQueryCached,
+                );
+
+                const filterButton = document.getElementById("filterButton");
+                if (filterButton) {
+                    filterButton.addEventListener("click", (event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        populatePaintingList(
+                            "paintingsList",
+                            paintingsQuery,
+                            handleQueryCached,
+                        );
+                    });
+                } // End filterButton
+
+                const artistFilter = document.getElementById("artistsDropDown");
+                if (artistFilter) {
+                    artistFilter.addEventListener("change", () => {
+                        if (artistFilter.value == "NULL") {
+                            setCache("ArtistIDFilter", "");
+                        } else {
+                            setCache("ArtistIDFilter", artistFilter.value);
+                        }
+                    });
+                }
+
+                const galleryFilter =
+                    document.getElementById("galleriesDropDown");
+                if (galleryFilter) {
+                    galleryFilter.addEventListener("change", () => {
+                        if (galleryFilter.value == "NULL") {
+                            setCache("GalleryIDFilter", "");
+                        } else {
+                            setCache("GalleryIDFilter", galleryFilter.value);
+                        }
+                    });
+                }
+
+                const shapeFilter = document.getElementById("shapesDropDown");
+                if (shapeFilter) {
+                    shapeFilter.addEventListener("change", () => {
+                        if (shapeFilter.value == "NULL") {
+                            setCache("ShapeIDFilter", "");
+                        } else {
+                            setCache("ShapeIDFilter", shapeFilter.value);
+                        }
+                    });
+                }
+                //const pageFilter = document.getElementById("artistsDropDown");
+                //if (artistFilter) {
+                //  CurrentPage
+                //}
+            }); // End DOMContentLoaded
+        </script>
+    </head>
+
+    <body>
+        <header>
+            <div class="ui attached stackable grey inverted menu">
+                <div class="ui container">
+                    <nav class="right menu">
+                        <div class="ui simple dropdown item">
+                            <i class="user icon"></i>
+                            Account
+                            <i class="dropdown icon"></i>
+                            <div class="menu">
+                                <a class="item"
+                                    ><i class="sign in icon"></i> Login</a
+                                >
+                                <a class="item"
+                                    ><i class="edit icon"></i> Edit Profile</a
+                                >
+                                <a class="item"
+                                    ><i class="globe icon"></i> Choose
+                                    Language</a
+                                >
+                                <a class="item"
+                                    ><i class="settings icon"></i> Account
+                                    Settings</a
+                                >
+                            </div>
+                        </div>
+                        <a class="item">
+                            <i class="heartbeat icon"></i> Favorites
+                        </a>
+                        <a class="item"> <i class="shop icon"></i> Cart </a>
+                    </nav>
+                </div>
+            </div>
+
+            <div class="ui attached stackable borderless huge menu">
+                <div class="ui container">
+                    <h2 class="header item">
+                        <img src="images/logo5.png" class="ui small image" />
+                    </h2>
+                    <a class="item"> <i class="home icon"></i> Home </a>
+                    <a class="item"> <i class="mail icon"></i> About Us </a>
+                    <a class="item"> <i class="home icon"></i> Blog </a>
+                    <div class="ui simple dropdown item">
+                        <i class="grid layout icon"></i>
+                        Browse
+                        <i class="dropdown icon"></i>
+                        <div class="menu">
+                            <a class="item"
+                                ><i class="users icon"></i> Artists</a
+                            >
+                            <a class="item"
+                                ><i class="theme icon"></i> Genres</a
+                            >
+                            <a class="item"
+                                ><i class="paint brush icon"></i> Paintings</a
+                            >
+                            <a class="item"
+                                ><i class="cube icon"></i> Subjects</a
+                            >
+                        </div>
+                    </div>
+                    <div class="right item">
+                        <div class="ui mini icon input">
+                            <input type="text" placeholder="Search ..." />
+                            <i class="search icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="ui segment doubling stackable grid container">
+            <section class="eleven wide column">
+                <h1 class="ui header">Paintings</h1>
+                <ul class="ui divided items" id="paintingsList"></ul>
+            </section>
+        </main>
+
+        <footer class="ui black inverted segment">
+            <div class="ui container">footer for later</div>
+        </footer>
+    </body>
+</html>

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <script src="./js/utils.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const url = new URL(window.location.href);
+                const params = new URLSearchParams(url.search);
+                const paintingId = params.get("id");
+                populateImageLocation(
+                    "leftPictureLocation",
+                    paintingId,
+                    handleQueryCached,
+                );
+                populateImageTitleDetails(
+                    "rightDescriptionLocation1",
+                    paintingId,
+                    handleQueryCached,
+                );
+            }); // End DOMContentLoaded
+        </script>
+    </head>
+
+    <body>
+        <main>
+            <!-- Main section about painting -->
+            <section class="ui segment grey100">
+                <div class="ui doubling stackable grid container">
+                    <div
+                        class="nine wide column"
+                        id="leftPictureLocation"
+                    ></div>
+                    <!-- END LEFT Picture Column -->
+
+                    <div
+                        class="seven wide column"
+                        id="rightDescriptionLocation"
+                    >
+                        <div
+                            class="seven wide column"
+                            id="rightDescriptionLocation1"
+                        ></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="ui black inverted segment">
+            <div class="ui container">footer</div>
+        </footer>
+    </body>
+</html>
